@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Bot, LogOut } from 'lucide-react';
+import { Bot, LogOut, LayoutDashboard, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -36,6 +36,25 @@ const Navbar = () => {
             >
               Home
             </Link>
+
+            {isAuthenticated && (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-2"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+                <Link
+                  to="/chatbots"
+                  className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-2"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Chatbots
+                </Link>
+              </>
+            )}
 
             {isAuthenticated ? (
               <Button variant="ghost" onClick={handleLogout} className="gap-2">

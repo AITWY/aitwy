@@ -10,6 +10,8 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import VerifyEmail from "./pages/VerifyEmail";
 import ResendVerification from "./pages/ResendVerification";
+import Chatbots from "./pages/Chatbots";
+import ChatInterface from "./pages/ChatInterface";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/resend-verification" element={<ResendVerification />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/chatbots" element={<Chatbots />} />
+            <Route path="/chatbot/:id" element={<ChatInterface />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

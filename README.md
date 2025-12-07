@@ -35,7 +35,8 @@ FRONTEND_URL=http://localhost:8080
 
 Create `.env` in project root:
 ```env
-VITE_API_URL=http://localhost:5001/api
+VITE_BACKEND_URL=http://localhost:5001
+VITE_CHATBOT_API_URL=https://your-chatbot-api.ngrok-free.dev
 ```
 
 3. **Run the application:**
@@ -82,6 +83,9 @@ aitwy/
 - ✅ MongoDB Atlas integration
 - ✅ Protected routes
 - ✅ Email service with Nodemailer
+- ✅ **Chatbot integration** with external API
+- ✅ Create and manage AI chatbots
+- ✅ Real-time chat interface
 - ✅ Modern UI with Tailwind CSS & shadcn/ui
 - ✅ TypeScript for type safety
 - ✅ Responsive design
@@ -108,6 +112,8 @@ aitwy/
 
 ## 📡 API Endpoints
 
+### Authentication API
+
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | GET | `/health` | Health check | No |
@@ -117,6 +123,22 @@ aitwy/
 | POST | `/api/auth/login` | Login user (requires verified email) | No |
 | GET | `/api/auth/me` | Get current user | Yes |
 | POST | `/api/auth/logout` | Logout user | Yes |
+
+### Chatbot API (External)
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/v1/chatbots/wizard/start` | Start chatbot creation wizard | Yes |
+| GET | `/api/v1/chatbots/{id}/status` | Get chatbot creation status | Yes |
+| POST | `/api/v1/chatbots/{id}/finalize` | Finalize chatbot creation | Yes |
+| GET | `/api/v1/chatbots/list` | List all chatbots | Yes |
+| GET | `/api/v1/chatbots/{id}` | Get chatbot details | Yes |
+| DELETE | `/api/v1/chatbots/{id}` | Delete chatbot | Yes |
+| POST | `/api/v1/chatbots/{id}/chat` | Send message to chatbot | Yes |
+| GET | `/api/v1/chatbots/{id}/knowledge` | List knowledge items | Yes |
+| POST | `/api/v1/chatbots/{id}/knowledge` | Add knowledge item | Yes |
+| PUT | `/api/v1/chatbots/{id}/knowledge/{itemId}` | Update knowledge item | Yes |
+| DELETE | `/api/v1/chatbots/{id}/knowledge/{itemId}` | Delete knowledge item | Yes |
 
 ## 🔧 Development
 
@@ -176,7 +198,8 @@ lsof -ti:5001 | xargs kill -9
 - `EMAIL_FROM` - From address for emails
 
 ### Frontend (`.env`)
-- `VITE_API_URL` - Backend API URL
+- `VITE_BACKEND_URL` - Backend API URL (for authentication)
+- `VITE_CHATBOT_API_URL` - Chatbot API URL (external service)
 
 **Note:** In development, emails use Ethereal (fake SMTP). Check console for preview URLs.
 
@@ -193,10 +216,51 @@ lsof -ti:5001 | xargs kill -9
 
 ## 📧 Email Verification
 
-New users must verify their email address before logging in. See `EMAIL_VERIFICATION_GUIDE.md` for detailed documentation.
+New users must verify their email address before logging in.
 
 **Development:** Uses Ethereal Email (fake SMTP) - check console for preview URLs
 **Production:** Configure real email service (Gmail, SendGrid, etc.)
+
+## 🤖 Chatbot Integration
+
+Create and manage AI chatbots powered by website scraping and knowledge base.
+
+### Features
+- **Wizard-based Creation**: Start with a website URL, and the system automatically scrapes and builds a knowledge base
+- **Status Tracking**: Real-time progress monitoring during chatbot creation
+- **Smart Chat**: AI-powered responses based on scraped website content
+- **Source Citations**: Responses include links to source pages
+- **Knowledge Management**: Add, update, or delete knowledge items manually
+- **Easy Configuration**: Centralized API configuration in `src/config/api.config.ts`
+
+### How to Create a Chatbot
+
+1. Navigate to the "Chatbots" page
+2. Click "Create New Chatbot"
+3. Enter:
+   - **Chatbot Name**: A friendly name for your bot
+   - **Website URL**: The website to scrape (e.g., `https://example.com`)
+   - **Description** (optional): What your chatbot does
+4. Click "Create Chatbot"
+5. Wait for the scraping process to complete (progress shown in real-time)
+6. Once completed, start chatting!
+
+### API Configuration
+
+Update the chatbot API URL in your `.env` file:
+
+```env
+VITE_CHATBOT_API_URL=https://your-chatbot-api.ngrok-free.dev
+```
+
+Or modify `src/config/api.config.ts` to change endpoint paths.
+
+### Chatbot Workflow
+
+1. **Start Wizard** → Creates chatbot record and starts scraping job
+2. **Status Polling** → Frontend polls for completion status
+3. **Finalize** → Marks chatbot as ready for use
+4. **Chat** → Send messages and receive AI-powered responses with sources
 
 ## 📄 License
 
