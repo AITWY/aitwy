@@ -1,73 +1,212 @@
-# Welcome to your Lovable project
+# AITWY - AI-Powered Business Platform
 
-## Project info
+A modern web application built with React, TypeScript, and MongoDB Atlas for user authentication and management.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Quick Start
 
-## How can I edit this code?
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB Atlas account (free at https://mongodb.com/cloud/atlas)
 
-There are several ways of editing your application.
+### Installation
 
-**Use Lovable**
+1. **Clone and install dependencies:**
+```bash
+# Install backend dependencies
+cd server
+npm install
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+# Install frontend dependencies
+cd ..
+npm install
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+2. **Configure MongoDB credentials:**
 
-**Use your preferred IDE**
+Create `server/.env`:
+```env
+MONGODB_URI=mongodb+srv://AITWY_admin:AITWY%40pg%40123@aitwy-ctl.ot1vbkm.mongodb.net/?appName=AITWY-CTL
+DB_NAME=aitwy
+JWT_SECRET=aitwy-super-secret-jwt-key-2024-change-in-production
+PORT=5001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:8080
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Create `.env` in project root:
+```env
+VITE_API_URL=http://localhost:5001/api
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. **Run the application:**
 
-Follow these steps:
+```bash
+# Terminal 1 - Backend
+cd server
+npm run dev
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Terminal 2 - Frontend
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. **Access the app:**
+- Frontend: http://localhost:8080
+- Backend API: http://localhost:5001
+- Health Check: http://localhost:5001/health
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Project Structure
 
-**Use GitHub Codespaces**
+```
+aitwy/
+├── server/                 # Backend (Node.js/Express)
+│   ├── config/            # Database configuration
+│   ├── models/            # MongoDB models
+│   ├── routes/            # API routes
+│   ├── middleware/        # Authentication middleware
+│   └── server.js          # Main server file
+├── src/                   # Frontend (React/TypeScript)
+│   ├── components/        # React components
+│   ├── contexts/          # React contexts (Auth)
+│   ├── pages/             # Page components
+│   ├── services/          # API services
+│   └── lib/               # Utilities
+└── public/                # Static assets
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🔐 Features
 
-## What technologies are used for this project?
+- ✅ User authentication (signup/login)
+- ✅ **Email verification** for new accounts
+- ✅ JWT token-based sessions
+- ✅ Password hashing with bcrypt
+- ✅ MongoDB Atlas integration
+- ✅ Protected routes
+- ✅ Email service with Nodemailer
+- ✅ Modern UI with Tailwind CSS & shadcn/ui
+- ✅ TypeScript for type safety
+- ✅ Responsive design
 
-This project is built with:
+## 🛠️ Tech Stack
 
-- Vite
+### Frontend
+- React 18
 - TypeScript
-- React
-- shadcn-ui
+- Vite
 - Tailwind CSS
+- shadcn/ui
+- React Router
+- Framer Motion
 
-## How can I deploy this project?
+### Backend
+- Node.js
+- Express
+- MongoDB Atlas
+- Mongoose
+- bcryptjs
+- jsonwebtoken
+- express-validator
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## 📡 API Endpoints
 
-## Can I connect a custom domain to my Lovable project?
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/health` | Health check | No |
+| POST | `/api/auth/signup` | Register user (sends verification email) | No |
+| GET | `/api/auth/verify-email/:token` | Verify email address | No |
+| POST | `/api/auth/resend-verification` | Resend verification email | No |
+| POST | `/api/auth/login` | Login user (requires verified email) | No |
+| GET | `/api/auth/me` | Get current user | Yes |
+| POST | `/api/auth/logout` | Logout user | Yes |
 
-Yes, you can!
+## 🔧 Development
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Backend Development
+```bash
+cd server
+npm run dev  # Runs with nodemon for auto-reload
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Frontend Development
+```bash
+npm run dev  # Runs Vite dev server
+```
+
+### Build for Production
+```bash
+npm run build
+```
+
+## 🐛 Troubleshooting
+
+### Port Already in Use
+```bash
+# Kill process on port
+lsof -ti:5001 | xargs kill -9
+```
+
+### MongoDB Connection Issues
+- Verify credentials in `server/.env`
+- Check IP whitelist in MongoDB Atlas (Network Access)
+- Ensure internet connection is active
+
+### CORS Errors
+- Verify `FRONTEND_URL` in `server/.env` matches your frontend URL
+- Check backend is running before starting frontend
+
+## 🔒 Security
+
+- Passwords are hashed with bcrypt (10 salt rounds)
+- JWT tokens expire after 30 days
+- Environment variables for sensitive data
+- CORS protection enabled
+- Input validation on all endpoints
+
+## 📝 Environment Variables
+
+### Backend (`server/.env`)
+- `MONGODB_URI` - MongoDB connection string
+- `DB_NAME` - Database name
+- `JWT_SECRET` - Secret for JWT signing
+- `PORT` - Server port
+- `NODE_ENV` - Environment mode
+- `FRONTEND_URL` - Frontend URL for CORS
+- `EMAIL_SERVICE` - Email service provider (gmail, sendgrid, etc.)
+- `EMAIL_USER` - Email account username
+- `EMAIL_PASSWORD` - Email account password or API key
+- `EMAIL_FROM` - From address for emails
+
+### Frontend (`.env`)
+- `VITE_API_URL` - Backend API URL
+
+**Note:** In development, emails use Ethereal (fake SMTP). Check console for preview URLs.
+
+## 🚀 Deployment
+
+### Production Checklist
+- [ ] Generate strong JWT_SECRET (64+ characters)
+- [ ] Use HTTPS for frontend and backend
+- [ ] Restrict MongoDB Atlas IP access
+- [ ] Update CORS to production domain
+- [ ] Set NODE_ENV=production
+- [ ] Enable rate limiting
+- [ ] Set up monitoring and logging
+
+## 📧 Email Verification
+
+New users must verify their email address before logging in. See `EMAIL_VERIFICATION_GUIDE.md` for detailed documentation.
+
+**Development:** Uses Ethereal Email (fake SMTP) - check console for preview URLs
+**Production:** Configure real email service (Gmail, SendGrid, etc.)
+
+## 📄 License
+
+This project is private and proprietary.
+
+## 🤝 Contributing
+
+This is a private project. For questions or issues, contact the development team.
+
+---
+
+Built with ❤️ by the AITWY Team
+

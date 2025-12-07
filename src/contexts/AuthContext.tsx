@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import apiService from '@/services/api';
 
 interface User {
   id: string;
@@ -35,62 +36,95 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Check for existing session on mount
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const checkAuth = async () => {
+      const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      
+      if (storedUser && token) {
+        try {
+          // Verify token with backend
+          const response = await apiService.getCurrentUser();
+          if (response.success && response.data) {
+            setUser({
+              id: response.data.user.id,
+              name: response.data.user.name,
+              email: response.data.user.email,
+            });
+          } else {
+            // Token invalid, clear storage
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+          }
+        } catch (error) {
+          // Token invalid or server error, clear storage
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
   }, []);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Simulate API call - Replace with actual Lovable Cloud auth
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await apiService.login(email, password);
       
-      // For demo purposes - in production, this would validate against Lovable Cloud
-      const mockUser: User = {
-        id: '1',
-        name: email.split('@')[0],
-        email: email,
+      if (response.success && response.data) {
+        const userData: User = {
+          id: response.data.user.id,
+          name: response.data.user.name,
+          email: response.data.user.email,
+        };
+        
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('token', response.data.token);
+        
+        return { success: true };
+      } else {
+        return { success: false, error: response.message || 'Login failed' };
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      return { 
+        success: false, 
+        error: error.message || 'Login failed. Please check your connection and try again.' 
       };
-      
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      localStorage.setItem('token', 'mock-jwt-token');
-      
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: 'Login failed. Please try again.' };
     }
   };
 
   const signup = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Simulate API call - Replace with actual Lovable Cloud auth
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await apiService.signup(name, email, password);
       
-      const mockUser: User = {
-        id: '1',
-        name: name,
-        email: email,
+      if (response.success) {
+        // Don't set user or token yet - account needs email verification
+        // User will login after verifying email
+        return { success: true };
+      } else {
+        return { success: false, error: response.message || 'Signup failed' };
+      }
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      return { 
+        success: false, 
+        error: error.message || 'Signup failed. Please check your connection and try again.' 
       };
-      
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      localStorage.setItem('token', 'mock-jwt-token');
-      
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: 'Signup failed. Please try again.' };
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+  const logout = async () => {
+    try {
+      await apiService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
   };
 
   return (

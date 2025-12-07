@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Bot, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Bot, Mail, Lock, User, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
@@ -53,11 +54,11 @@ const Signup = () => {
     setIsLoading(false);
 
     if (result.success) {
+      setSignupSuccess(true);
       toast({
         title: 'Success',
-        description: 'Account created successfully!',
+        description: 'Account created! Please check your email to verify your account.',
       });
-      navigate('/dashboard');
     } else {
       toast({
         title: 'Error',
@@ -96,6 +97,50 @@ const Signup = () => {
           className="w-full max-w-md relative z-10"
         >
           <div className="glass rounded-3xl p-8">
+            {signupSuccess ? (
+              /* Success State - Email Verification Required */
+              <div className="text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', duration: 0.5 }}
+                  className="inline-flex items-center justify-center p-3 rounded-2xl bg-green-500/10 mb-4"
+                >
+                  <CheckCircle2 className="w-12 h-12 text-green-500" />
+                </motion.div>
+                <h1 className="text-2xl font-bold mb-2 text-green-500">
+                  Account Created!
+                </h1>
+                <p className="text-muted-foreground mb-4">
+                  We've sent a verification email to <strong>{email}</strong>
+                </p>
+                <div className="bg-secondary/50 rounded-lg p-4 mb-6 text-left">
+                  <h3 className="font-semibold mb-2 flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Next Steps:
+                  </h3>
+                  <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
+                    <li>Check your email inbox</li>
+                    <li>Click the verification link</li>
+                    <li>Your account will be activated</li>
+                    <li>Login to access your dashboard</li>
+                  </ol>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Didn't receive the email? Check your spam folder or{' '}
+                  <Link to="/resend-verification" className="text-primary hover:underline">
+                    request a new one
+                  </Link>
+                </p>
+                <Link to="/login">
+                  <Button variant="hero" size="lg" className="w-full">
+                    Go to Login
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              /* Signup Form */
+              <>
             {/* Header */}
             <div className="text-center mb-8">
               <motion.div
@@ -204,6 +249,8 @@ const Signup = () => {
                 </Link>
               </p>
             </div>
+            </>
+            )}
           </div>
         </motion.div>
       </div>
